@@ -11,7 +11,7 @@ function getFieldTexture(game) {
   let bmd = game.add.bitmapData(720, 10)
   bmd.ctx.beginPath()
   bmd.ctx.rect(0, 0, 720, 10)
-  bmd.ctx.fillStyle = '#BAFFC9'
+  bmd.ctx.fillStyle = '#000'
   bmd.ctx.fill()
   return bmd
 }

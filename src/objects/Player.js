@@ -55,9 +55,9 @@ class Player extends Phaser.Sprite {
 
       // Field limits
       if (this.playerID % 2) {
-        if (this.body.velocity.y > 0 && this.y > this.game.world.height / 2 - this.height / 2) this.body.velocity.y = 0
+        if (this.body.velocity.y > 0 && this.y > this.game.world.height / 2 - 10 - this.height / 2) this.body.velocity.y = 0
       } else {
-        if (this.body.velocity.y < 0 && this.y < this.game.world.height / 2 + this.height / 2) this.body.velocity.y = 0
+        if (this.body.velocity.y < 0 && this.y < this.game.world.height / 2 + 10 + this.height / 2) this.body.velocity.y = 0
       }
     }
   }
