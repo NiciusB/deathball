@@ -1,13 +1,19 @@
-import RainbowText from 'objects/RainbowText';
+import PlayerManager from 'objects/PlayerManager'
+import BallManager from 'objects/BallManager'
+import Field from 'objects/Field'
 
 class GameState extends Phaser.State {
 
-	create() {
-		let center = { x: this.game.world.centerX, y: this.game.world.centerY }
-		let text = new RainbowText(this.game, center.x, center.y, "- phaser -\nwith a sprinkle of\nES6 dust!");
-		text.anchor.set(0.5);
+	create() {		
+		this.game.physics.startSystem(Phaser.Physics.ARCADE)
+		this.game.stage.backgroundColor = "#4488AA"
+    this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
+		this.ballManager = new BallManager(this.game)
+		this.playerManager = new PlayerManager(this.game, this.ballManager)
+		this.field = new Field(this.game, this.playerManager)
+
 	}
 
 }
 
-export default GameState;
+export default GameState
