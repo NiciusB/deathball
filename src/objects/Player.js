@@ -141,7 +141,7 @@ class Player extends Phaser.Sprite {
   }
 
   onKilled() {
-    this.game.camera.shake(0.003, 500)
+    this.game.camera.shake(0.01, 500)
     this.emitter.kill()
     this.initializePosition()
     setTimeout((player) => {
@@ -150,8 +150,8 @@ class Player extends Phaser.Sprite {
   }
 
   damage(damage) {
-    super.damage(damage)
     this.game.camera.shake(0.002, 300)
+    super.damage(damage)
     this.setRecentlyDamaged()
   }
   contactHandler(element) {

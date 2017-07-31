@@ -16,7 +16,7 @@ function getBallTexture(game) {
   let bmd = game.add.bitmapData(size, size)
   bmd.ctx.beginPath()
   bmd.ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI)
-  bmd.ctx.fillStyle = '#DD5E3E'
+  bmd.ctx.fillStyle = '#fff'
   bmd.ctx.fill()
   return bmd
 }
