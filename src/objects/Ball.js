@@ -4,9 +4,10 @@ class Ball extends Phaser.Sprite {
     super(game, pos.x, pos.y, getBallTexture(game))
     this.anchor.setTo(0.5, 0.5)
 
-    game.physics.enable(this, Phaser.Physics.ARCADE)
+    game.physics.p2.enable(this)
+    this.body.mass=1
     this.body.collideWorldBounds = true
-    this.body.bounce.set(0.1)
+    this.body.setCircle(8)
   }
 }
 
@@ -15,7 +16,7 @@ function getBallTexture(game) {
   let bmd = game.add.bitmapData(size, size)
   bmd.ctx.beginPath()
   bmd.ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI)
-  bmd.ctx.fillStyle = '#3f3'
+  bmd.ctx.fillStyle = '#DD5E3E'
   bmd.ctx.fill()
   return bmd
 }

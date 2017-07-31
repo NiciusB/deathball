@@ -4,6 +4,7 @@ class PlayerManager extends Phaser.Group {
   constructor(game, ballManager) {
     super(game)
     this.enableBody = true
+    this.physicsBodyType = Phaser.Physics.P2JS
     this.ballManager = ballManager
     this.player_n = 0
 

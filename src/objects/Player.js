@@ -7,20 +7,28 @@ class Player extends Phaser.Sprite {
     this.playerID = playerID
     this.gamepad = gamepad
     this.gamepad.getButton(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER).onDown.add(this.rightTriggerPressed, this)
+    this.gamepad.getButton(Phaser.Gamepad.XBOX360_START).onDown.add(() => {
+      window.document.location.reload()
+    }, this)
     this.ballManager = ballManager
 
     this.health = 100
     this.speed = 900
-    this.drift = 20
+    this.drift = 15
     this.rotationSpeed = 10
     this.launchForce = 2500
     this.recentlyDamaged = false
-    
+
     playerManager.add(this)
+    this.body.mass=200
+    this.body.fixedRotation = true
     this.body.collideWorldBounds = true
     this.initializePosition()
     this.events.onKilled.add(this.onKilled, this)
     this.events.onRevived.add(this.onRevived, this)
+
+    // Collision with ball
+    this.body.onBeginContact.add(this.contactHandler, this)
   }
 
   update() {
@@ -38,17 +46,18 @@ class Player extends Phaser.Sprite {
       var rightStickY = this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_RIGHT_Y) || 0
       if (rightStickX !== 0 || rightStickY !== 0) {
         var destinationAngle = (Math.atan2(rightStickX, -rightStickY) * (180 / Math.PI))
-        if (destinationAngle - this.body.rotation > 180) destinationAngle -= 360
-        if (destinationAngle - this.body.rotation < -180) destinationAngle += 360
+        if (destinationAngle - this.body.angle > 180) destinationAngle -= 360
+        if (destinationAngle - this.body.angle < -180) destinationAngle += 360
         var realRotSpeed = (1 / (this.rotationSpeed / 100))
-        this.body.rotation = Math.round(this.body.rotation * (realRotSpeed - 1) / realRotSpeed + destinationAngle / realRotSpeed)
+        this.body.angle = this.body.angle * (realRotSpeed - 1) / realRotSpeed + destinationAngle / realRotSpeed
       }
+      this.rotation = this.body.rotation
 
-      // Collision with ball
-      if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER, 250)) {
-        this.game.physics.arcade.overlap(this, this.ballManager.ball, this.ballCatchedHandler, null, this)
-      } else if (!this.recentlyDamaged) {
-        this.game.physics.arcade.overlap(this, this.ballManager.ball, this.ballCollisionHandler, null, this)
+      // Field limits
+      if (this.playerID % 2) {
+        if (this.body.velocity.y > 0 && this.y > this.game.world.height / 2 - this.height / 2) this.body.velocity.y = 0
+      } else {
+        if (this.body.velocity.y < 0 && this.y < this.game.world.height / 2 + this.height / 2) this.body.velocity.y = 0
       }
     }
   }
@@ -63,15 +72,23 @@ class Player extends Phaser.Sprite {
   }
 
   initializePosition() {
-    this.position.setTo(this.game.world.width / 2, this.playerID % 2 ? 100 : this.game.world.height - 100)
-    this.body.velocity.setTo(0, 0)
-    this.rotation = this.playerID % 2 ? Math.PI : 0
+    this.body.angle = this.playerID % 2 ? 180 : 0
+    this.body.reset(this.game.world.width / 2, this.playerID % 2 ? 100 : this.game.world.height - 100, true)
+    this.body.setZeroVelocity()
+  }
+
+  setRecentlyDamaged(duration = 850) {
+    this.recentlyDamaged = true
+    setTimeout((player) => {
+      player.recentlyDamaged = false
+    }, duration, this)
   }
 
   onRevived() {
     this.recentlyDamaged = false
+    this.setRecentlyDamaged(1500)
   }
-  
+
   onKilled() {
     this.initializePosition()
     setTimeout((player) => {
@@ -81,37 +98,29 @@ class Player extends Phaser.Sprite {
 
   damage(damage) {
     super.damage(damage)
-    if (this.alive) {
-      this.recentlyDamaged = true
-      setTimeout((player) => {
-        player.recentlyDamaged = false
-      }, 850, this)
+    this.setRecentlyDamaged()
+  }
+  contactHandler(element) {
+    if (element && element.sprite === this.ballManager.ball) {
+      if (this.gamepad.justPressed(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER, 250)) {
+        this.ballManager.removeBall(this.playerID)
+        this.loadTexture(getPlayerTextureWithBall(this.game))
+      } else if (!this.recentlyDamaged) {
+        this.damage(50)
+      }
     }
   }
-
-  ballCollisionHandler(player, ball) {
-    player.damage(50)
-    if (player.alive) {
-      ball.body.velocity.multiply(0.2)
-    }
-  }
-
-  ballCatchedHandler(player, ball) {
-    this.ballManager.removeBall(this.playerID)
-    this.loadTexture(getPlayerTextureWithBall(this.game))
-  }
-
 }
 
 function getPlayerTexture(game) {
   let bmd = game.add.bitmapData(64, 64)
   bmd.ctx.beginPath()
   bmd.ctx.rect(0, 0, 64, 64)
-  bmd.ctx.fillStyle = '#fff'
+  bmd.ctx.fillStyle = '#BAFFC9'
   bmd.ctx.fill()
   bmd.ctx.beginPath()
   bmd.ctx.rect(26, 0, 12, 12)
-  bmd.ctx.fillStyle = '#f00'
+  bmd.ctx.fillStyle = '#fff'
   bmd.ctx.fill()
   return bmd
 }
@@ -120,7 +129,7 @@ function getPlayerTextureWithBall(game) {
   var size = 16
   bmd.ctx.beginPath()
   bmd.ctx.arc(24 + size / 2, size / 2, size / 2, 0, 2 * Math.PI)
-  bmd.ctx.fillStyle = '#0f0'
+  bmd.ctx.fillStyle = '#DD5E3E'
   bmd.ctx.fill()
   return bmd
 }
