@@ -15,6 +15,3 @@ body, #content {
   height: 100%;
   max-height: 960px;
 }
-canvas {
-  background: linear-gradient(#6812b5 30%, #a0630a 70%);
-}
