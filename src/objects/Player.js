@@ -7,8 +7,8 @@ class Player extends Phaser.Group {
     // Emitter
     this.emitter = new Phaser.Particles.Arcade.Emitter(game, 0, 0)
     this.emitter.makeParticles('smoke')
-    this.emitter.setAlpha(1, 0, 350)
-    this.emitter.setScale(0.4, 0.2, 0.4, 0.2, 350)
+    this.emitter.setAlpha(0.4, 0, 350)
+    this.emitter.setScale(0.5, 0.1, 0.5, 0.1, 350)
     this.emitter.start(false, 350, 25)
     this.add(this.emitter)
 
@@ -19,7 +19,7 @@ class Player extends Phaser.Group {
     // Arrow
     this.arrow = new Phaser.Sprite(game, 0, 0, 'arrow')
     this.arrow.anchor.setTo(0.5, 0.5)
-    this.arrow.y = -35
+    this.arrow.y = -42
     this.player.addChild(this.arrow)
   }
   postUpdate() {
