@@ -1,14 +1,16 @@
 class Player extends Phaser.Sprite {
-
   constructor(playerID, player, state, gamepad) {
+    // Phaser Sprite
     super(player.game, 0, 0, 'player' + playerID)
+    this.anchor.setTo(0.5, 0.5)
+
+    // Props
     this.player = player
     this.state = state
     this.gamepad = gamepad
     this.playerID = playerID
 
-    this.anchor.setTo(0.5, 0.5)
-
+    // Stats
     this.health = 100
     this.speed = 900
     this.drift = 15
@@ -17,17 +19,19 @@ class Player extends Phaser.Sprite {
     this.recentlyDamaged = false
     this.hasBall = false
 
-    this.gamepad.getButton(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER).onDown.add(this.rightTriggerPressed, this)
-    this.gamepad.getButton(Phaser.Gamepad.XBOX360_A).onDown.add(this.rightTriggerPressed, this)
+    // Gamepad
+    this.gamepad.getButton(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER).onDown.add(this.throwBall, this)
+    this.gamepad.getButton(Phaser.Gamepad.XBOX360_A).onDown.add(this.throwBall, this)
     this.gamepad.getButton(Phaser.Gamepad.XBOX360_START).onDown.add(() => {
-      game.physics.p2.paused = !game.physics.p2.paused
+      this.game.physics.p2.paused = !this.game.physics.p2.paused
     }, this)
     this.gamepad.getButton(Phaser.Gamepad.XBOX360_BACK).onDown.add(() => {
       window.document.location.reload()
     }, this)
 
+    // Physics
     this.game.physics.p2.enable(this)
-    this.body.mass = 200
+    this.body.mass = 25
     this.body.fixedRotation = true
     this.body.collideWorldBounds = true
     this.initializePosition()
@@ -37,14 +41,13 @@ class Player extends Phaser.Sprite {
     // Collision with ball
     this.body.onBeginContact.add(this.contactHandler, this)
   }
-  postUpdate() {
-    super.postUpdate()
-  }
   update() {
     super.update()
     if (this.alive) {
+      // recentlyDamaged blink
       if (this.recentlyDamaged) this.visible = !this.visible
       else this.visible = true
+
       // Movement with left stick
       var leftStickX = this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) || 0
       var leftStickY = this.gamepad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) || 0
@@ -61,7 +64,7 @@ class Player extends Phaser.Sprite {
         var realRotSpeed = (1 / (this.rotationSpeed / 100))
         this.body.angle = this.body.angle * (realRotSpeed - 1) / realRotSpeed + destinationAngle / realRotSpeed
       }
-      this.rotation = this.body.rotation
+      this.rotation = this.body.rotation // Sprite doesn't rotate automatically because of fixedRotation=true
 
       // Field limits
       if (this.playerID % 2) {
@@ -69,10 +72,14 @@ class Player extends Phaser.Sprite {
       } else {
         if (this.body.velocity.y < 0 && this.y < this.game.world.height / 2 + 10 + this.height / 2) this.body.velocity.y = 0
       }
-    }    
+      // Ball atraction
+      if (this.actionButtonPressed()) {
+        this.state.ballManager.attractTo(this.x, this.y)
+      }
+    }
   }
 
-  rightTriggerPressed() {
+  throwBall() {
     if (this.hasBall) {
       this.game.camera.shake(0.001, 100)
       this.state.ballManager.addBall(this)
@@ -112,16 +119,18 @@ class Player extends Phaser.Sprite {
     this.setRecentlyDamaged()
   }
 
+  actionButtonPressed() {
+    return this.gamepad.justPressed(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER, 350) ||
+      this.gamepad.justPressed(Phaser.Gamepad.XBOX360_A, 350)
+  }
+
   contactHandler(element) {
     if (element && element.sprite) {
       var sprite = element.sprite
       if (sprite.custom)
         switch (sprite.custom.type) {
           case 'Ball':
-            if (
-              this.gamepad.justPressed(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER, 350) ||
-              this.gamepad.justPressed(Phaser.Gamepad.XBOX360_A, 350)
-            ) {
+            if (this.actionButtonPressed()) {
               sprite.destroy()
               this.hasBall = true
             } else if (!this.recentlyDamaged) {

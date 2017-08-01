@@ -7,8 +7,7 @@ class GameState extends Phaser.State {
 
 	create() {
 		this.game.physics.startSystem(Phaser.Physics.P2JS)
-		this.game.physics.p2.defaultRestitution = 0.75
-		this.game.physics.p2.world.defaultContactMaterial.friction = 0
+    this.game.physics.p2.restitution = 0.25
 		this.game.physics.p2.setImpactEvents(true)
 		this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
 		this.field = new Field(this.game)
