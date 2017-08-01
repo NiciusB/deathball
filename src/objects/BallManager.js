@@ -1,16 +1,9 @@
 import Ball from 'objects/Ball'
 
-class BallManager {
-  constructor(game) {
-    this.game = game
-    this.ball = new Ball(this.game)
-    this.ballOwner = false
+class BallManager extends Phaser.Group {
+  constructor(state) {
+    super(state.game)
     this.addBall()
-  }
-
-  removeBall(owner = false) {
-    this.ball.destroy()
-    this.ballOwner = owner
   }
 
   addBall(launcher = false) {
@@ -21,12 +14,11 @@ class BallManager {
       pos = new Phaser.Point(launcher.body.x + rot.x * launcher.height/2 * 1.5, launcher.body.y + rot.y * launcher.width/2 * 1.5)
     }
     this.ball = new Ball(this.game, pos)
-    this.game.add.existing(this.ball)
+    this.add(this.ball)
     if (launcher) {
       this.ball.body.velocity.x = launcher.launchForce * rot.x
       this.ball.body.velocity.y = launcher.launchForce * rot.y
     }
-    this.ballOwner = false
   }
 }
 

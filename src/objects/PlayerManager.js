@@ -8,7 +8,7 @@ class PlayerManager extends Phaser.Group {
     this.game.input.gamepad.start()
     this.game.input.gamepad.addCallbacks(this, {
       onConnect: function (padIndex) {
-        new Player(++this.player_n, this, this.game, this.game.input.gamepad._gamepads[padIndex], state)
+        this.add(new Player(++this.player_n, this, this.game, this.game.input.gamepad._gamepads[padIndex], state))
       }
     })
   }

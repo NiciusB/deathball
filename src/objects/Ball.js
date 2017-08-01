@@ -2,6 +2,10 @@ class Ball extends Phaser.Sprite {
   constructor(game, pos = false) {
     if (!pos) pos = new Phaser.Point(game.world.centerX, game.world.centerY)
     super(game, pos.x, pos.y, getBallTexture(game))
+    this.custom = {
+      type: 'Ball',
+      owner: false
+    }
     this.anchor.setTo(0.5, 0.5)
 
     game.physics.p2.enable(this)
@@ -16,7 +20,7 @@ function getBallTexture(game) {
   let bmd = game.add.bitmapData(size, size)
   bmd.ctx.beginPath()
   bmd.ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI)
-  bmd.ctx.fillStyle = '#fff'
+  bmd.ctx.fillStyle = '#000'
   bmd.ctx.fill()
   return bmd
 }
