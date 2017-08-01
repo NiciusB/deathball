@@ -2,7 +2,6 @@ class TrumpsWall extends Phaser.Sprite {
   constructor(game) {
     super(game, game.world.centerX, game.world.centerY, normalWall(game))
     this.anchor.setTo(0.5, 0.5)
-    game.add.existing(this)
   }
 }
 

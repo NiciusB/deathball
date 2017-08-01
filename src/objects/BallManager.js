@@ -27,8 +27,8 @@ class BallManager extends Phaser.Group {
     var attractionArea = new Phaser.Ellipse(x - size / 2, y - size / 2, size, size)
     this.forEachAlive(function (ball) {
       if (attractionArea.contains(ball.x, ball.y)) {
-        ball.body.x = (ball.body.x * (attraction - 1) / attraction) + ((x/2 + ball.body.x/2) / attraction)
-        ball.body.y = (ball.body.y * (attraction - 1) / attraction) + ((y/2 + ball.body.y/2) / attraction)
+        ball.body.x = (ball.body.x * (attraction - 1) / attraction) + (x / attraction)
+        ball.body.y = (ball.body.y * (attraction - 1) / attraction) + (y / attraction)
       }
     }, this)
   }

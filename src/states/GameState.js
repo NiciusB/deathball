@@ -1,7 +1,6 @@
 import PlayerManager from 'objects/PlayerManager'
 import BallManager from 'objects/BallManager'
 import Field from 'objects/Field'
-import TrumpsWall from 'objects/TrumpsWall'
 
 class GameState extends Phaser.State {
 
@@ -11,7 +10,6 @@ class GameState extends Phaser.State {
 		this.game.physics.p2.setImpactEvents(true)
 		this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
 		this.field = new Field(this.game)
-		this.trumpsWall = new TrumpsWall(this.game)
 		this.ballManager = new BallManager(this)
 		this.playerManager = new PlayerManager(this)
 	}

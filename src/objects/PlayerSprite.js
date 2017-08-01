@@ -12,6 +12,7 @@ class Player extends Phaser.Sprite {
 
     // Stats
     this.health = 100
+    this.maxHealth = 100
     this.speed = 900
     this.drift = 15
     this.rotationSpeed = 10
@@ -72,8 +73,9 @@ class Player extends Phaser.Sprite {
       } else {
         if (this.body.velocity.y < 0 && this.y < this.game.world.height / 2 + 10 + this.height / 2) this.body.velocity.y = 0
       }
+
       // Ball atraction
-      if (this.actionButtonPressed()) {
+      if (this.hasActionButtonPressed()) {
         this.state.ballManager.attractTo(this.x, this.y)
       }
     }
@@ -119,9 +121,9 @@ class Player extends Phaser.Sprite {
     this.setRecentlyDamaged()
   }
 
-  actionButtonPressed() {
-    return this.gamepad.justPressed(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER, 350) ||
-      this.gamepad.justPressed(Phaser.Gamepad.XBOX360_A, 350)
+  hasActionButtonPressed(maxMs = 350) {
+    return this.gamepad.justPressed(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER, maxMs) ||
+      this.gamepad.justPressed(Phaser.Gamepad.XBOX360_A, maxMs)
   }
 
   contactHandler(element) {
@@ -130,7 +132,7 @@ class Player extends Phaser.Sprite {
       if (sprite.custom)
         switch (sprite.custom.type) {
           case 'Ball':
-            if (this.actionButtonPressed()) {
+            if (this.hasActionButtonPressed()) {
               sprite.destroy()
               this.hasBall = true
             } else if (!this.recentlyDamaged) {
